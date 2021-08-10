@@ -40,18 +40,19 @@ def download(cap, url, title, num, pdf):
 	n=1
 	imgs=[]
 	for x in src:
+		link=[x["src"].replace("//","https://") if x["src"][0:2] == "//" else x["src"]]
 		proges=f"[#] Downloading \"{PATH.split('/')[-1]}/"+"{:02}.jpg\"".format(n)
 		print(f"\r{proges}",end="",flush=True)
 		if pdf == False:
 			with open(f"{PATH}/"+"{:02}.jpg".format(n), "wb") as img:
-				req=ses.get(x["src"])
+				req=ses.get(link[0])
 				img.write(req.content)
 			n+=1
 			if n > len(src):
 				print(f"\r{' '*len(proges)}", end="", flush=True)
 				print(f"\r[✓] Done {PATH.split('/')[-1]}", end="", flush=True)
 		else:
-			imgs.append(ses.get(x["src"]).content)
+			imgs.append(ses.get(link[0]).content)
 			n+=1
 	if pdf == True:
 		print(f"\r{' '*len(proges)}",end="", flush=True)
