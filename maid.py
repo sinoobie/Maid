@@ -35,7 +35,7 @@ def download(cap, url, title, num):
 
 	n=1
 	for x in src:
-		proges=f"[#] Downloading \"{PATH.split('Maid/')[1]}/"+"{:02}.jpg\"".format(n)
+		proges=f"[#] Downloading \"{PATH.split('/')[-1]}/"+"{:02}.jpg\"".format(n)
 		print(f"\r{proges}",end="",flush=True)
 		with open(f"{PATH}/"+"{:02}.jpg".format(n), "wb") as img:
 			req=requests.get(x["src"])
@@ -43,7 +43,7 @@ def download(cap, url, title, num):
 		n+=1
 		if n > len(src):
 			print(f"\r{' '*len(proges)}", end="", flush=True)
-			print(f"\r[✓] Done {PATH.split('Maid/')[1]}", end="", flush=True)
+			print(f"\r[✓] Done {PATH.split('/')[-1]}", end="", flush=True)
 	print()
 
 def chap_dl(cap, pilih, title):
