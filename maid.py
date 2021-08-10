@@ -1,5 +1,7 @@
-import requests, os, sys, time
+import requests, os, sys
 from bs4 import BeautifulSoup as BS
+from PIL import Image
+from io import BytesIO
 
 #DEBUG#
 #import logging
@@ -18,15 +20,17 @@ try:
         os.mkdir(MAINDIR)
 except: pass
 
-def download(cap, url, title, num):
+def download(cap, url, title, num, pdf):
 	MAINPATH=f"{MAINDIR}/{title}"
 	PATH=f"{MAINPATH}/{cap[num-1]['cap']}"
 	try:
 		os.mkdir(MAINPATH)
 	except: pass
-	try:
-		os.mkdir(PATH)
-	except: pass
+
+	if pdf == False:
+		try:
+			os.mkdir(PATH)
+		except: pass
 
 	req=ses.get(url)
 	bs=BS(req.text, "html.parser")
@@ -34,19 +38,38 @@ def download(cap, url, title, num):
 	src=img[0].find_all("img")
 
 	n=1
+	imgs=[]
 	for x in src:
 		proges=f"[#] Downloading \"{PATH.split('/')[-1]}/"+"{:02}.jpg\"".format(n)
 		print(f"\r{proges}",end="",flush=True)
-		with open(f"{PATH}/"+"{:02}.jpg".format(n), "wb") as img:
-			req=requests.get(x["src"])
-			img.write(req.content)
-		n+=1
-		if n > len(src):
-			print(f"\r{' '*len(proges)}", end="", flush=True)
-			print(f"\r[✓] Done {PATH.split('/')[-1]}", end="", flush=True)
+		if pdf == False:
+			with open(f"{PATH}/"+"{:02}.jpg".format(n), "wb") as img:
+				req=ses.get(x["src"])
+				img.write(req.content)
+			n+=1
+			if n > len(src):
+				print(f"\r{' '*len(proges)}", end="", flush=True)
+				print(f"\r[✓] Done {PATH.split('/')[-1]}", end="", flush=True)
+		else:
+			imgs.append(ses.get(x["src"]).content)
+			n+=1
+	if pdf == True:
+		print(f"\r{' '*len(proges)}",end="", flush=True)
+		print("\r[*] Converting to pdf",end="",flush=True)
+		cpdf=[]
+		for i in imgs:
+			cpdf.append(Image.open(BytesIO(i)))
+		cpdf[0].save(f"{PATH}.pdf", save_all=True, append_images=cpdf)
+		print(f"\r[✓] Done {PATH.split('/')[-1]}   ",end="",flush=True)
 	print()
 
 def chap_dl(cap, pilih, title):
+	tny=input("[?] Apakah anda ingin menconvert hasil download ke pdf (Y/T) ")
+	if tny.lower() == "y":
+		pdf=True
+	else:
+		pdf=False
+
 	if "-" in pilih:
 		pilih=pilih.split("-")
 		if len(pilih) == 2 and pilih[1] != "":
@@ -54,9 +77,9 @@ def chap_dl(cap, pilih, title):
 		else:
 			ran=range(int(pilih[0]), len(cap)+1)
 		for x in ran:
-			download(cap, cap[x-1]["url"], title, x)
+			download(cap, cap[x-1]["url"], title, x, pdf)
 	else:
-		download(cap, cap[int(pilih)-1]["url"], title, int(pilih))
+		download(cap, cap[int(pilih)-1]["url"], title, int(pilih), pdf)
 
 def get_chap(manga):
 	_cap=[]
