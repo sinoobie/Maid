@@ -58,8 +58,8 @@ def download(cap, url, title, num, pdf):
 		print("\r[*] Converting to pdf",end="",flush=True)
 		cpdf=[]
 		for i in imgs:
-			cpdf.append(Image.open(BytesIO(i)))
-		cpdf[0].save(f"{PATH}.pdf", save_all=True, append_images=cpdf)
+			cpdf.append(Image.open(BytesIO(i)).convert('RGB'))
+		cpdf[0].save(f"{PATH}.pdf", save_all=True, append_images=cpdf[1:])
 		print(f"\r[✓] Done {PATH.split('/')[-1]}   ",end="",flush=True)
 	print()
 
