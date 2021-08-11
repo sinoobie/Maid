@@ -90,9 +90,9 @@ def get_chap(manga):
 
 	info=bs.find("dl", {"class":"dl-horizontal"})
 	rate=info.find("div",{"class":"rating clearfix"})
-	genre="".join([i.find_all('a').text for i in info])
-	print(f"[•Genre: {genre}•]\n[•Rating: {rate}•]")
-	time.sleep(1.5)
+	genre=", ".join([i.text for i in info.find_all("a")])
+	print(f"[•Genre: {genre}•]\n[•Rating: {rate.text.strip()[:-1]}•]")
+	time.sleep(2)
 
 	n=0
 	for x in data:
@@ -107,37 +107,40 @@ def cari(q):
 	req=ses.get("https://mangaid.click/search?query="+q)
 	return req.json()
 
-os.system("clear")
-print("""\033[97m
+try:
+	os.system("clear")
+	print("""\033[97m
         [ Maid ( Manga-id ) ]
              - noobie -      
 """)
-query=input("Cari: ")
-hasil=cari(query)["suggestions"]
-if len(hasil) > 1:
-	n=1
-	for x in hasil:
-		print(f'{n}. {x["value"]}')
-		n+=1
-	pil=int(input("Pilih: "))
-	lih=hasil[pil-1]["data"]
-	title=hasil[pil-1]["value"]
-elif len(hasil) == 1:
-	lih=hasil[0]["data"]
-	title=hasil[0]["value"]
-else:
-	print("!¡ manga tidak tersedia ¡!")
-	sys.exit()
+	query=input("Cari: ")
+	hasil=cari(query)["suggestions"]
+	if len(hasil) > 1:
+		n=1
+		for x in hasil:
+			print(f'{n}. {x["value"]}')
+			n+=1
+		pil=int(input("Pilih: "))
+		lih=hasil[pil-1]["data"]
+		title=hasil[pil-1]["value"]
+	elif len(hasil) == 1:
+		lih=hasil[0]["data"]
+		title=hasil[0]["value"]
+	else:
+		print("!¡ manga tidak tersedia ¡!")
+		sys.exit()
 
-print(f"\n\033[96m[•{title}•]")
-cap=get_chap(lih)
-for y in range(len(cap)):
-	print(f"[{y+1}] {cap[y]['cap']}")
-print(f"""[ {len(cap)} (Total) Chapter ditemukan ]
+	print(f"\n\033[96m[•{title}•]")
+	cap=get_chap(lih)
+	for y in range(len(cap)):
+		print(f"[{y+1}] {cap[y]['cap']}")
+	print(f"""[ {len(cap)} (Total) Chapter ditemukan ]
 
 \033[97m[info]
 # ketik (misalnya: 10-) untuk mendownload dari nomor 10 sampai akhir
 # ketik (misalnya: 10-20) untuk mendownload dari nomor 10 sampai 20
 # ketik angka saja tanpa garis untuk mendownload salah satu""")
-pilih=input("noobie/> ")
-chap_dl(cap, pilih, lih)
+	pilih=input("noobie/> ")
+	chap_dl(cap, pilih, lih)
+except Exception as err:
+	print(f"Err: {err}")
