@@ -1,4 +1,4 @@
-import requests, os, sys
+import requests, os, sys, time
 from bs4 import BeautifulSoup as BS
 from PIL import Image
 from io import BytesIO
@@ -87,6 +87,12 @@ def get_chap(manga):
 	req=ses.get("https://mangaid.click/manga/"+manga)
 	bs=BS(req.text, "html.parser")
 	data=bs.find_all("h5", {"class":"chapter-title-rtl"})
+
+	info=bs.find("dl", {"class":"dl-horizontal"})
+	rate=info.find("div",{"class":"rating clearfix"})
+	genre="".join([i.find_all('a').text for i in info])
+	print(f"[•Genre: {genre}•]\n[•Rating: {rate}•]")
+	time.sleep(1.5)
 
 	n=0
 	for x in data:
