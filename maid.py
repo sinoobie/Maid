@@ -8,16 +8,19 @@ from io import BytesIO
 #logging.basicConfig(level=logging.DEBUG)
 
 ses=requests.Session()
-try:
-        open('/sdcard/test.txt','w')
-except:
-        print("\033[97mNote: Program ini membutuhkan akses internal storage untuk menyimpan hasil download")
-        os.system('termux-setup-storage')
-        sys.exit()
 
-MAINDIR="/sdcard/Maid"
+MAINDIR="/storage/emulated/0/Maid"
 try:
-        os.mkdir(MAINDIR)
+	os.listdir("/storage/emulated/0")
+except PermissionError:
+	print("\033[97mNote: Program ini membutuhkan akses internal storage untuk menyimpan hasil download")
+	os.system('termux-setup-storage')
+	sys.exit()
+except FileNotFoundError:
+	MAINDIR="result"
+
+try:
+	os.mkdir(MAINDIR)
 except: pass
 
 def download(cap, url, title, num, pdf):
