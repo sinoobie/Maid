@@ -43,7 +43,7 @@ def download(cap, url, title, num, pdf):
 	n=1
 	imgs=[]
 	for x in src:
-		link=[x["src"].replace("//","https://") if x["src"][0:2] == "//" else x["src"]]
+		link=[x["data-src"].replace("//","https://") if x["data-src"][0:2] == "//" else x["data-src"]]
 		proges=f"[#] Downloading \"{PATH.split('/')[-1]}/"+"{:02}.jpg\"".format(n)
 		print(f"\r{proges}",end="",flush=True)
 		if pdf == False:
